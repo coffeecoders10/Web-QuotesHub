@@ -1,0 +1,204 @@
+@property --c0 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #1b2230;
+}
+@property --c1 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #1b2230;
+}
+
+.screen {
+  --c0: #1b2230;
+  --c1: #1b2230;
+  position: relative;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  justify-items: center;
+  text-align: center;
+  padding: clamp(4rem, 9vh, 6rem) clamp(1.5rem, 7vw, 6rem);
+  overflow: hidden;
+  color: oklch(95% 0.012 80);
+  /* One quiet field per quote, taken from its own palette and sunk into the dark. */
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--c0) 62%, #0c0e12),
+    color-mix(in oklab, var(--c0) 30%, color-mix(in oklab, var(--c1) 10%, #0c0e12))
+  );
+  transition: --c0 600ms ease-out, --c1 600ms ease-out;
+}
+
+.figure {
+  margin: 0;
+  width: 100%;
+  max-width: 60rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: arrive 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition:
+    opacity 320ms ease-in,
+    filter 320ms ease-in;
+}
+
+.figure[data-leaving] {
+  opacity: 0;
+  filter: blur(6px);
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(0.6rem);
+  }
+}
+
+.quote {
+  margin: 0;
+  font-family: var(--font-latin), Georgia, serif;
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.quote p {
+  margin: 0;
+}
+
+.figure[data-size="s"] .quote {
+  font-size: clamp(2.75rem, 8.5vw, 6rem);
+}
+.figure[data-size="m"] .quote {
+  font-size: clamp(2.1rem, 6vw, 4.5rem);
+}
+.figure[data-size="l"] .quote {
+  font-size: clamp(1.7rem, 4.4vw, 3.4rem);
+  line-height: 1.18;
+}
+
+/* Non-Latin scripts: own typeface, looser leading, one size ladder. */
+.figure[data-lang="Hindi"][data-size] .quote,
+.figure[data-lang="Marathi"][data-size] .quote,
+.figure[data-lang="Japanese"][data-size] .quote,
+.figure[data-lang="Korean"][data-size] .quote {
+  font-size: clamp(1.9rem, 5vw, 3.75rem);
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+.figure[data-lang="Hindi"] .quote,
+.figure[data-lang="Marathi"] .quote {
+  font-family: var(--font-deva), serif;
+  line-height: 1.5;
+}
+.figure[data-lang="Japanese"] .quote {
+  font-family: var(--font-jp), serif;
+}
+.figure[data-lang="Korean"] .quote {
+  font-family: var(--font-kr), serif;
+}
+
+.translation {
+  margin: clamp(1.25rem, 3vw, 2rem) 0 0;
+  max-width: 38rem;
+  font-family: var(--font-latin), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  line-height: 1.4;
+  text-wrap: pretty;
+  color: color-mix(in oklab, currentColor 78%, transparent);
+}
+
+.caption {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.speaker {
+  font-weight: 500;
+}
+
+.movie {
+  color: color-mix(in oklab, currentColor 76%, transparent);
+}
+
+.year {
+  font-variant-numeric: tabular-nums;
+}
+
+.controls {
+  position: absolute;
+  inset-inline-end: clamp(0.5rem, 2vw, 1.5rem);
+  inset-block-end: clamp(0.5rem, 2vw, 1.5rem);
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* Barely there until you reach for it. */
+.ghost {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.22;
+  transition:
+    opacity 250ms ease-out,
+    background-color 250ms ease-out;
+}
+
+.ghost:hover,
+.ghost:focus-visible {
+  opacity: 0.85;
+  background: color-mix(in oklab, currentColor 10%, transparent);
+}
+
+.ghost:focus-visible {
+  outline: 1.5px solid currentColor;
+  outline-offset: -2px;
+}
+
+.ghost svg {
+  transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ghost:active svg {
+  transform: rotate(90deg);
+}
+
+@media (hover: none) {
+  .ghost {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .figure {
+    animation: none;
+    transition: none;
+  }
+  .screen,
+  .ghost svg {
+    transition: none;
+  }
+}
+
+.screen ::selection {
+  background: color-mix(in oklab, var(--c1) 45%, transparent);
+  color: inherit;
+}
