@@ -6,12 +6,25 @@
 @property --c1 {
   syntax: "<color>";
   inherits: true;
-  initial-value: #1b2230;
+  initial-value: #7f8ea3;
+}
+@property --c2 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #e8e0d2;
 }
 
+/*
+ * Each quote carries three colors: --c0 is the ground, --c1 fills the background
+ * motif, --c2 is the text and the motif's hairlines. All three come from the data.
+ */
 .screen {
   --c0: #1b2230;
-  --c1: #1b2230;
+  --c1: #7f8ea3;
+  --c2: #e8e0d2;
+  --ink: var(--c2);
+  --ink-2: color-mix(in oklab, var(--c2) 82%, var(--c0));
+  --ink-3: color-mix(in oklab, var(--c2) 72%, var(--c0));
   position: relative;
   min-height: 100dvh;
   display: grid;
@@ -21,20 +34,32 @@
   text-align: center;
   padding: clamp(4rem, 9vh, 6rem) clamp(1.5rem, 7vw, 6rem);
   overflow: hidden;
-  color: oklch(95% 0.012 80);
-  /* One quiet field per quote, taken from its own palette and sunk into the dark. */
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--c0) 62%, #0c0e12),
-    color-mix(in oklab, var(--c0) 30%, color-mix(in oklab, var(--c1) 10%, #0c0e12))
+  color: var(--ink);
+  background: color-mix(in oklab, var(--c0) 84%, black);
+  transition:
+    --c0 700ms ease-out,
+    --c1 700ms ease-out,
+    --c2 700ms ease-out;
+}
+
+/* A faint lift behind the text so the quote sits in light, not on a flat fill. */
+.screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    70% 60% at 50% 46%,
+    color-mix(in oklab, var(--c0) 100%, var(--c1) 14%),
+    transparent
   );
-  transition: --c0 600ms ease-out, --c1 600ms ease-out;
 }
 
 .figure {
+  position: relative;
   margin: 0;
   width: 100%;
-  max-width: 60rem;
+  max-width: 62rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -57,12 +82,15 @@
   }
 }
 
+/* ---- The quote: face, size and leading are set per voice ---- */
+
 .quote {
+  --k: 1;
   margin: 0;
-  font-family: var(--font-latin), Georgia, serif;
+  font-family: var(--font-drama), Georgia, serif;
   font-weight: 400;
-  line-height: 1.12;
-  letter-spacing: -0.015em;
+  line-height: 1.14;
+  letter-spacing: -0.01em;
   text-wrap: balance;
 }
 
@@ -71,69 +99,142 @@
 }
 
 .figure[data-size="s"] .quote {
-  font-size: clamp(2.75rem, 8.5vw, 6rem);
+  font-size: calc(clamp(2.6rem, 7.4vw, 5.6rem) * var(--k));
 }
 .figure[data-size="m"] .quote {
-  font-size: clamp(2.1rem, 6vw, 4.5rem);
+  font-size: calc(clamp(2.1rem, 5.4vw, 4.2rem) * var(--k));
 }
 .figure[data-size="l"] .quote {
-  font-size: clamp(1.7rem, 4.4vw, 3.4rem);
-  line-height: 1.18;
+  font-size: calc(clamp(1.8rem, 4.2vw, 3.3rem) * var(--k));
+  line-height: 1.2;
+}
+.figure[data-size="xl"] .quote {
+  font-size: calc(clamp(1.6rem, 3.5vw, 2.7rem) * var(--k));
+  line-height: 1.26;
 }
 
-/* Non-Latin scripts: own typeface, looser leading, one size ladder. */
-.figure[data-lang="Hindi"][data-size] .quote,
-.figure[data-lang="Marathi"][data-size] .quote,
-.figure[data-lang="Japanese"][data-size] .quote,
-.figure[data-lang="Korean"][data-size] .quote {
-  font-size: clamp(1.9rem, 5vw, 3.75rem);
-  letter-spacing: 0;
-  line-height: 1.4;
-}
-.figure[data-lang="Hindi"] .quote,
-.figure[data-lang="Marathi"] .quote {
-  font-family: var(--font-deva), serif;
-  line-height: 1.5;
-}
-.figure[data-lang="Japanese"] .quote {
-  font-family: var(--font-jp), serif;
-}
-.figure[data-lang="Korean"] .quote {
-  font-family: var(--font-kr), serif;
-}
-
-.translation {
-  margin: clamp(1.25rem, 3vw, 2rem) 0 0;
-  max-width: 38rem;
-  font-family: var(--font-latin), Georgia, serif;
+.figure[data-voice="gothic"] .quote {
+  --k: 1.04;
+  font-family: var(--font-gothic), Georgia, serif;
   font-style: italic;
-  font-size: clamp(1.2rem, 2vw, 1.55rem);
-  line-height: 1.4;
-  text-wrap: pretty;
-  color: color-mix(in oklab, currentColor 78%, transparent);
+  letter-spacing: 0;
 }
+.figure[data-voice="epic"] .quote {
+  --k: 0.9;
+  font-family: var(--font-epic), Georgia, serif;
+  letter-spacing: 0.005em;
+  line-height: 1.24;
+}
+.figure[data-voice="lyric"] .quote {
+  --k: 1.04;
+  font-family: var(--font-lyric), Georgia, serif;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.2;
+}
+.figure[data-voice="romantic"] .quote {
+  --k: 0.94;
+  font-family: var(--font-romantic), Georgia, serif;
+  font-style: italic;
+  letter-spacing: -0.015em;
+}
+.figure[data-voice="modern"] .quote {
+  --k: 0.9;
+  font-family: var(--font-modern), system-ui, sans-serif;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.16;
+}
+.figure[data-voice="casual"] .quote {
+  --k: 0.92;
+  font-family: var(--font-casual), system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.figure[data-voice="drama"] .quote {
+  --k: 0.95;
+}
+
+/* ---- Attribution ---- */
 
 .caption {
-  margin-top: clamp(2.5rem, 6vw, 4rem);
+  margin-top: clamp(2rem, 5vw, 3.25rem);
+  padding-top: clamp(1.25rem, 3vw, 1.75rem);
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
   font-family: var(--font-ui), system-ui, sans-serif;
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* A short rule sets the attribution apart from the quote. */
+.caption::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 2.5rem;
+  height: 1px;
+  background: var(--c2);
+  opacity: 0.55;
 }
 
 .speaker {
+  font-size: 1.1rem;
   font-weight: 500;
 }
 
-.movie {
-  color: color-mix(in oklab, currentColor 76%, transparent);
+.source {
+  font-style: normal;
+  color: var(--ink-2);
+  text-wrap: balance;
 }
 
-.year {
+.source a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  text-decoration-color: color-mix(in oklab, currentColor 45%, transparent);
+  transition: text-decoration-color 200ms ease-out;
+}
+
+.source a:hover,
+.source a:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+.source a:focus-visible {
+  outline: 1.5px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.kind {
+  font-size: 0.85rem;
+  color: var(--ink-3);
+}
+
+.note {
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  font-style: italic;
+}
+
+/* ---- Chrome ---- */
+
+.date {
+  position: absolute;
+  inset-inline-start: clamp(1.25rem, 3vw, 2rem);
+  inset-block-end: clamp(1rem, 2.4vw, 1.75rem);
+  margin: 0;
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-size: 0.82rem;
+  color: var(--ink-3);
   font-variant-numeric: tabular-nums;
 }
 
@@ -156,7 +257,7 @@
   border-radius: 50%;
   background: transparent;
   cursor: pointer;
-  opacity: 0.22;
+  opacity: 0.4;
   transition:
     opacity 250ms ease-out,
     background-color 250ms ease-out;
@@ -164,8 +265,8 @@
 
 .ghost:hover,
 .ghost:focus-visible {
-  opacity: 0.85;
-  background: color-mix(in oklab, currentColor 10%, transparent);
+  opacity: 0.95;
+  background: color-mix(in oklab, currentColor 12%, transparent);
 }
 
 .ghost:focus-visible {
@@ -181,12 +282,6 @@
   transform: rotate(90deg);
 }
 
-@media (hover: none) {
-  .ghost {
-    opacity: 0.4;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .figure {
     animation: none;
@@ -199,6 +294,6 @@
 }
 
 .screen ::selection {
-  background: color-mix(in oklab, var(--c1) 45%, transparent);
+  background: color-mix(in oklab, var(--c1) 55%, transparent);
   color: inherit;
 }

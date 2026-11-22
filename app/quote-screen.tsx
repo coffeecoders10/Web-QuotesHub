@@ -2,24 +2,18 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { ALL_QUOTES, dailyIndex as computeDaily, randomIndex } from "./quote-engine";
+import Backdrop from "./quote-backdrop";
+import { describe, hostOf, sizeTier, typeset, voiceOf } from "./quote-style";
 import styles from "./quote-screen.module.css";
 
 const SWAP_MS = 320;
-const LATIN = new Set(["English", "Italian", "French"]);
-const LANG_CODE: Record<string, string> = {
-  Hindi: "hi",
-  Marathi: "mr",
-  Japanese: "ja",
-  Korean: "ko",
-  Italian: "it",
-  French: "fr",
+
+const STATUS_NOTE: Record<string, string> = {
+  unverified: "Attribution unverified",
+  disputed: "Attribution disputed",
 };
 
-function sizeTier(q: { text: string; lang: string }) {
-  // CJK and Devanagari carry more meaning per glyph, so their tiers run shorter.
-  const eff = q.text.length * (LATIN.has(q.lang) ? 1 : 1.9);
-  return eff <= 45 ? "s" : eff <= 80 ? "m" : "l";
-}
+const dayFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long" });
 
 const subscribeNever = () => () => {};
 const getServerToday = () => null;
@@ -73,34 +67,42 @@ export default function QuoteScreen() {
   return (
     <main
       className={styles.screen}
-      style={q ? ({ "--c0": q.c0, "--c1": q.c1 } as CSSProperties) : undefined}
+      style={q ? ({ "--c0": q.c0, "--c1": q.c1, "--c2": q.c2 } as CSSProperties) : undefined}
     >
+      {q && <Backdrop key={`bg-${index}`} voice={voiceOf(q)} />}
       {q && (
         <figure
           className={styles.figure}
           data-leaving={leaving ? "" : undefined}
-          data-lang={q.lang}
-          data-size={sizeTier(q)}
+          data-voice={voiceOf(q)}
+          data-size={sizeTier(q.text)}
           key={index}
           aria-live="polite"
         >
-          <blockquote className={styles.quote} lang={LANG_CODE[q.lang] ?? "en"}>
-            <p>{q.text}</p>
+          <blockquote className={styles.quote}>
+            <p>{typeset(q.text)}</p>
           </blockquote>
-          {q.translation && <p className={styles.translation}>{q.translation}</p>}
           <figcaption className={styles.caption}>
-            <span className={styles.speaker}>{q.speaker}</span>
-            <span className={styles.movie}>
-              {q.movie}
-              {q.year && (
-                <>
-                  <span aria-hidden> · </span>
-                  <span className={styles.year}>{q.year}</span>
-                </>
-              )}
-            </span>
+            <span className={styles.speaker}>{q.speaker || "Unknown author"}</span>
+            {q.source !== q.speaker && (
+              <cite className={styles.source}>
+                {q.url ? (
+                  <a href={q.url} target="_blank" rel="noopener noreferrer" title={`Open on ${hostOf(q.url)}`}>
+                    {q.source}
+                  </a>
+                ) : (
+                  q.source
+                )}
+              </cite>
+            )}
+            <span className={styles.kind}>{describe(q)}</span>
+            {STATUS_NOTE[q.status] && <span className={styles.note}>{STATUS_NOTE[q.status]}</span>}
           </figcaption>
         </figure>
+      )}
+
+      {q && (
+        <p className={styles.date}>{away ? "Not today’s quote" : dayFormat.format(new Date())}</p>
       )}
 
       <div className={styles.controls}>

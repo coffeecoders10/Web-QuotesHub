@@ -1,23 +1,29 @@
-// Builds app/quotes.json from docs/movie_dialogues_enriched.json (keeps palette, drops avatar SVGs).
+// Builds app/quotes.json from docs/quotes_800.json (slim keys, cleaned attribution).
 import { readFileSync, writeFileSync } from "node:fs";
 
-const src = JSON.parse(readFileSync("docs/movie_dialogues_enriched.json", "utf8"));
+const src = JSON.parse(readFileSync("docs/quotes_800.json", "utf8"));
 const seen = new Set();
 const out = [];
 for (const q of src) {
-  const text = q.dialogue_original?.trim();
+  const text = q.Quote?.trim();
   if (!text || seen.has(text)) continue;
   seen.add(text);
-  const colors = q.character_svg.match(/stop-color="(#[0-9A-Fa-f]{6})"/g)?.map((s) => s.slice(12, 19)) ?? [];
+  let speaker = (q["Speaker / Character"] ?? "").replace(/\s*\((?:attribution|speaker)[^)]*\)\s*$/i, "").trim();
+  if (/^u\/unknown$/i.test(speaker)) speaker = "";
+  const v = q.Verification ?? "";
   out.push({
+    id: q.ID,
     text,
-    translation: q.language !== "English" ? q.english_translation?.trim() || null : null,
-    lang: q.language,
-    movie: q.movie,
-    speaker: q.who_said_it,
-    year: q.catalogue_year ?? null,
-    c0: colors[0] ?? "#243B55",
-    c1: colors[1] ?? "#C99A6B",
+    speaker,
+    source: q.Source,
+    medium: q.Medium,
+    genre: q["Genre / Mood"],
+    c0: q.Primary,
+    c1: q.Secondary,
+    c2: q.Accent,
+    url: q["Source URL"] || null,
+    // "checked" only when the wording itself was confirmed against the original post.
+    status: /post wording checked/i.test(v) ? "checked" : /disputed|paraphrased/i.test(v) ? "disputed" : "unverified",
   });
 }
 writeFileSync("app/quotes.json", JSON.stringify(out));

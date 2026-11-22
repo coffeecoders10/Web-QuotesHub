@@ -1,0 +1,36 @@
+.backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  animation: settle 1600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.fill {
+  fill: var(--c1);
+}
+
+.line {
+  fill: none;
+  stroke: var(--c2);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.dot {
+  fill: var(--c2);
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop {
+    animation: none;
+  }
+}
