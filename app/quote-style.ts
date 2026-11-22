@@ -7,10 +7,10 @@ import type { Quote } from "./quote-engine";
 export type Voice = "gothic" | "epic" | "lyric" | "romantic" | "modern" | "casual" | "drama";
 
 const RULES: [Voice, RegExp][] = [
-  ["gothic", /gothic|tragedy|horror|mortality|grief|mystery|death/],
+  ["gothic", /gothic|tragedy|horror|mortality|grief|mystery|death|psychological|dark fantasy/],
   ["romantic", /romance|regency|\blove\b/],
   ["modern", /science fiction|dystopi|superhero|action|thriller|crime|heist|technology|apocalyptic|sports|disaster|noir/],
-  ["casual", /comedy|satire|animation|coming of age|family|absurd|young adult|holiday|children|friendship|humou?r|kindness|growing up/],
+  ["casual", /comedy|satire|animation|coming of age|family|absurd|young adult|holiday|children|friendship|humou?r|kindness|growing up|slice of life/],
   ["epic", /fantasy|adventure|histor|stoic|strategy|survival|power|politic|resolve|resilience|courage|duty|morality/],
   ["lyric", /poetry|philosoph|nature|spiritual|reflection|existential|memory|impermanence|literary|identity|introspection|beauty|wonder|wisdom|time|perception|mindfulness|humanism|transcendental|mortality|ecology/],
 ];
@@ -36,18 +36,6 @@ export function typeset(text: string) {
     .replace(/"/g, "”")
     .replace(/(^|[\s([—-])'/g, "$1‘")
     .replace(/'/g, "’");
-}
-
-/** "Fantasy / Epic" + "Book" → "fantasy book"; "Reddit" posts read as "Reddit post". */
-export function describe(q: Pick<Quote, "genre" | "medium">) {
-  const noun = q.medium === "Reddit" || q.medium === "Tumblr" ? `${q.medium} post` : q.medium === "Book" ? "book" : q.medium === "Movie" ? "film" : q.medium;
-  const mood = q.genre
-    .split("/")
-    .map((s) => s.trim())
-    .find((s) => s && s.toLowerCase() !== q.medium.toLowerCase());
-  if (!mood) return noun;
-  const lower = /^[A-Z][a-z]/.test(mood) ? mood.charAt(0).toLowerCase() + mood.slice(1) : mood;
-  return `${lower} ${noun}`;
 }
 
 export function hostOf(url: string) {

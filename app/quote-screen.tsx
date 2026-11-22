@@ -3,15 +3,10 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { ALL_QUOTES, dailyIndex as computeDaily, randomIndex } from "./quote-engine";
 import Backdrop from "./quote-backdrop";
-import { describe, hostOf, sizeTier, typeset, voiceOf } from "./quote-style";
+import { sizeTier, typeset, voiceOf } from "./quote-style";
 import styles from "./quote-screen.module.css";
 
 const SWAP_MS = 320;
-
-const STATUS_NOTE: Record<string, string> = {
-  unverified: "Attribution unverified",
-  disputed: "Attribution disputed",
-};
 
 const dayFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long" });
 
@@ -69,7 +64,7 @@ export default function QuoteScreen() {
       className={styles.screen}
       style={q ? ({ "--c0": q.c0, "--c1": q.c1, "--c2": q.c2 } as CSSProperties) : undefined}
     >
-      {q && <Backdrop key={`bg-${index}`} voice={voiceOf(q)} />}
+      {q && <Backdrop key={`bg-${index}`} id={q.id} />}
       {q && (
         <figure
           className={styles.figure}
@@ -83,11 +78,13 @@ export default function QuoteScreen() {
             <p>{typeset(q.text)}</p>
           </blockquote>
           <figcaption className={styles.caption}>
-            <span className={styles.speaker}>{q.speaker || "Unknown author"}</span>
+            <span aria-hidden>— </span>
+            {q.speaker && <span className={styles.speaker}>{q.speaker}</span>}
+            {q.speaker && q.source !== q.speaker && <span>, </span>}
             {q.source !== q.speaker && (
               <cite className={styles.source}>
                 {q.url ? (
-                  <a href={q.url} target="_blank" rel="noopener noreferrer" title={`Open on ${hostOf(q.url)}`}>
+                  <a href={q.url} target="_blank" rel="noopener noreferrer">
                     {q.source}
                   </a>
                 ) : (
@@ -95,8 +92,6 @@ export default function QuoteScreen() {
                 )}
               </cite>
             )}
-            <span className={styles.kind}>{describe(q)}</span>
-            {STATUS_NOTE[q.status] && <span className={styles.note}>{STATUS_NOTE[q.status]}</span>}
           </figcaption>
         </figure>
       )}

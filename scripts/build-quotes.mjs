@@ -1,7 +1,7 @@
-// Builds app/quotes.json from docs/quotes_800.json (slim keys, cleaned attribution).
+// Builds app/quotes.json from docs/quotes.json, the merged + recolored list from recolor-quotes.mjs (slim keys, cleaned attribution).
 import { readFileSync, writeFileSync } from "node:fs";
 
-const src = JSON.parse(readFileSync("docs/quotes_800.json", "utf8"));
+const src = JSON.parse(readFileSync("docs/quotes.json", "utf8"));
 const seen = new Set();
 const out = [];
 for (const q of src) {
@@ -10,7 +10,6 @@ for (const q of src) {
   seen.add(text);
   let speaker = (q["Speaker / Character"] ?? "").replace(/\s*\((?:attribution|speaker)[^)]*\)\s*$/i, "").trim();
   if (/^u\/unknown$/i.test(speaker)) speaker = "";
-  const v = q.Verification ?? "";
   out.push({
     id: q.ID,
     text,
@@ -22,8 +21,6 @@ for (const q of src) {
     c1: q.Secondary,
     c2: q.Accent,
     url: q["Source URL"] || null,
-    // "checked" only when the wording itself was confirmed against the original post.
-    status: /post wording checked/i.test(v) ? "checked" : /disputed|paraphrased/i.test(v) ? "disputed" : "unverified",
   });
 }
 writeFileSync("app/quotes.json", JSON.stringify(out));
