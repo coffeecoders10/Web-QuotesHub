@@ -25,6 +25,13 @@ const ui = Hanken_Grotesk({ variable: "--font-ui", weight: ["400", "500"] });
 export const metadata: Metadata = {
   title: "Quote of the Day",
   description: "One line from a book, film, show or thread, every day.",
+  icons: {
+    icon: [
+      { url: "/logo.svg", type: "image/svg+xml" },
+      { url: "/logo.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: "/logo.png",
+  },
 };
 
 export const viewport: Viewport = {

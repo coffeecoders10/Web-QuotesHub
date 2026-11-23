@@ -163,12 +163,27 @@
 /* ---- Attribution ---- */
 
 .caption {
+  align-self: flex-end;
   margin-top: clamp(1.5rem, 4vw, 2.5rem);
   font-family: var(--font-ui), system-ui, sans-serif;
   font-size: clamp(0.95rem, 1.4vw, 1.1rem);
   line-height: 1.45;
   color: var(--ink-2);
+  text-align: right;
   text-wrap: pretty;
+}
+
+.byline {
+  display: block;
+}
+
+.medium {
+  display: block;
+  margin-top: 0.2em;
+  font-size: 0.78em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
 }
 
 .speaker {
@@ -206,48 +221,95 @@
   font-variant-numeric: tabular-nums;
 }
 
+.brand {
+  position: absolute;
+  z-index: 2;
+  inset-inline-start: clamp(1.25rem, 3vw, 2rem);
+  inset-block-start: clamp(1rem, 2.4vw, 1.75rem);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-size: 0.82rem;
+  color: var(--ink-3);
+}
+
 .controls {
   position: absolute;
-  inset-inline-end: clamp(0.5rem, 2vw, 1.5rem);
-  inset-block-end: clamp(0.5rem, 2vw, 1.5rem);
+  z-index: 2;
+  inset-inline: 0;
+  inset-block-end: clamp(1rem, 3vw, 2rem);
   display: flex;
-  gap: 0.25rem;
+  justify-content: center;
 }
 
-/* Barely there until you reach for it. */
-.ghost {
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
+.refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 28%, transparent);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--c0) 55%, transparent);
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-size: 0.95rem;
+  color: var(--ink-2);
   cursor: pointer;
-  opacity: 0.4;
   transition:
-    opacity 250ms ease-out,
-    background-color 250ms ease-out;
+    color 250ms ease-out,
+    background-color 250ms ease-out,
+    border-color 250ms ease-out;
 }
 
-.ghost:hover,
-.ghost:focus-visible {
-  opacity: 0.95;
-  background: color-mix(in oklab, currentColor 12%, transparent);
+.refresh:hover,
+.refresh:focus-visible {
+  color: var(--ink);
+  border-color: color-mix(in oklab, var(--ink) 55%, transparent);
+  background: color-mix(in oklab, var(--ink) 12%, transparent);
 }
 
-.ghost:focus-visible {
+.refresh:focus-visible {
   outline: 1.5px solid currentColor;
-  outline-offset: -2px;
+  outline-offset: 3px;
 }
 
-.ghost svg {
+.refresh svg {
   transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.ghost:active svg {
-  transform: rotate(90deg);
+.refresh:active svg {
+  transform: rotate(180deg);
+}
+
+/* ---- Mobile: the quote is centered; the attribution stays at the bottom right ---- */
+
+@media (max-width: 640px) {
+  .figure {
+    width: 100%;
+  }
+  .quote {
+    text-align: center;
+  }
+}
+
+/* ---- Widget: same screen, no chrome, type sized by script to fill the frame ---- */
+
+.screen[data-mode="widget"] {
+  padding: 6vmin;
+}
+
+.screen[data-mode="widget"] .figure {
+  max-width: 100%;
+}
+
+.screen[data-mode="widget"] .quote {
+  font-size: calc(var(--fs, 20) * var(--k) * 1px);
+}
+
+.screen[data-mode="widget"] .caption {
+  font-size: calc(var(--fs, 20) * 0.38px);
+  margin-top: calc(var(--fs, 20) * 0.6px);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -256,7 +318,8 @@
     transition: none;
   }
   .screen,
-  .ghost svg {
+  .refresh,
+  .refresh svg {
     transition: none;
   }
 }
