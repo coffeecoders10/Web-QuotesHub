@@ -106,7 +106,7 @@ export default function QuoteScreen({ mode = "today" }: { mode?: Mode }) {
       {mode !== "widget" && (
         <div className={styles.brand}>
           <Logo size={28} />
-          <span>Quote of the Day</span>
+          <span>Coffee Quotes</span>
         </div>
       )}
       {q && (
@@ -125,9 +125,10 @@ export default function QuoteScreen({ mode = "today" }: { mode?: Mode }) {
           <figcaption className={styles.caption}>
             <span className={styles.byline}>
               <span aria-hidden>— </span>
-              {q.speaker && <span className={styles.speaker}>{q.speaker}</span>}
-              {q.speaker && !sameName && <span>, </span>}
-              {!sameName && (
+              <span className={styles.speaker}>{q.speaker || q.source}</span>
+            </span>
+            <span className={styles.medium}>
+              {q.speaker && !sameName && (
                 <cite className={styles.source}>
                   {q.url ? (
                     <a href={q.url} target="_blank" rel="noopener noreferrer">
@@ -138,13 +139,22 @@ export default function QuoteScreen({ mode = "today" }: { mode?: Mode }) {
                   )}
                 </cite>
               )}
+              {q.speaker && !sameName && <span aria-hidden> · </span>}
+              {q.medium}
             </span>
-            <span className={styles.medium}>{q.medium}</span>
           </figcaption>
         </figure>
       )}
 
       {q && mode === "today" && <p className={styles.date}>{dayFormat.format(new Date())}</p>}
+
+      {mode !== "widget" && (
+        <p className={styles.credit}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/coffeecoders_logo.png" alt="" width={22} height={22} />
+          <span>Built by CoffeeCoders</span>
+        </p>
+      )}
 
       {mode === "random" && (
         <div className={styles.controls}>

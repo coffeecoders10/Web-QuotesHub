@@ -23,7 +23,7 @@ const drama = Gloock({ variable: "--font-drama", weight: "400", preload: false }
 const ui = Hanken_Grotesk({ variable: "--font-ui", weight: ["400", "500"] });
 
 export const metadata: Metadata = {
-  title: "Quote of the Day",
+  title: "Coffee Quotes",
   description: "One line from a book, film, show or thread, every day.",
   icons: {
     icon: [

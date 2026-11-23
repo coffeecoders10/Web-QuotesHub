@@ -1,16 +1,18 @@
-/** The mark: two closing quote marks over an ember rule. Flat, matches public/logo.svg. */
+/** The mark: a coffee seen from above, with a quote mark in the latte art. Matches public/logo.svg. */
 export default function Logo({ size = 28 }: { size?: number }) {
   return (
     <svg viewBox="0 0 512 512" width={size} height={size} aria-hidden>
       <rect width="512" height="512" rx="112" fill="#1b2230" />
-      <g fill="#e8e0d2">
-        <g id="logo-mark" transform="translate(190 190)">
-          <circle r="52" />
-          <path d="M52 0V10C52 74 14 118-42 132L-54 100C-18 88 0 64 0 36Z" />
-        </g>
-        <use href="#logo-mark" x="132" />
+      
+      
+      
+      <g transform="rotate(45 256 256)"><circle cx="256" cy="256" r="170" fill="#e8e0d2" /><circle cx="256" cy="256" r="134" fill="#c8894b" /><circle cx="256" cy="256" r="134" fill="none" stroke="#a96d36" strokeWidth="6" /><rect x="396" y="222" width="86" height="68" rx="30" fill="#e8e0d2" /></g><g fill="#f3e6d0">
+        <circle cx="218" cy="236" r="24" />
+        <path d="M242 236v6c0 38-22 58-52 66l-6-16c17-6 28-18 28-36z" />
+        <circle cx="304" cy="236" r="24" />
+        <path d="M328 236v6c0 38-22 58-52 66l-6-16c17-6 28-18 28-36z" />
       </g>
-      <rect x="150" y="372" width="212" height="22" rx="11" fill="#c8894b" />
+      
     </svg>
   );
 }
