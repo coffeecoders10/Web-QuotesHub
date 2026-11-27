@@ -331,11 +331,13 @@
 }
 
 .screen[data-mode="widget"] .figure {
+  width: fit-content;
   max-width: 100%;
 }
 
 .screen[data-mode="widget"] .quote {
   font-size: calc(var(--fs, 20) * var(--k) * 1px);
+  text-align: left;
 }
 
 .screen[data-mode="widget"] .caption {
